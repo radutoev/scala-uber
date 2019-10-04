@@ -1,9 +1,10 @@
 import java.time.Instant
 
+import explicitdeps.ExplicitDepsPlugin.autoImport.moduleFilterRemoveValue
 import sbt.Keys.javaOptions
-import ExplicitDepsPlugin.autoImport.moduleFilterRemoveValue
 
 lazy val versionOf = new {
+  val akka               = "2.5.25"
   val cats               = "2.0.0"
   val catsEffect         = "2.0.0"
   val circe              = "0.12.1"
@@ -13,7 +14,7 @@ lazy val versionOf = new {
   val `log-effect`       = "0.10.1"
   val `logback-classic`  = "1.2.3"
   val scalaCheck         = "1.14.1"
-  val scalaTest          = "3.2.0-M1"
+  val scalaTest          = "3.0.8"
   val zio                = "1.0.0-RC13"
   val `zio-interop-cats` = "2.0.0.0-RC4"
   val shapeless          = "2.3.3"
@@ -35,23 +36,24 @@ lazy val transitiveDependencies: Seq[ExclusionRule] = Seq(
  * Dependencies
  */
 val externalDependencies = Seq(
-  "org.typelevel"   %% "cats-core"           % versionOf.cats,
-  "org.typelevel"   %% "cats-effect"         % versionOf.catsEffect,
-  "co.fs2"          %% "fs2-core"            % versionOf.fs2,
-  "org.http4s"      %% "http4s-core"         % versionOf.http4s,
-  "org.http4s"      %% "http4s-server"       % versionOf.http4s,
-  "org.http4s"      %% "http4s-dsl"          % versionOf.http4s excludeAll (transitiveDependencies: _*),
-  "org.http4s"      %% "http4s-blaze-server" % versionOf.http4s,
-  "org.http4s"      %% "http4s-circe"        % versionOf.http4s,
-  "io.circe"        %% "circe-core"          % versionOf.circe,
-  "io.circe"        %% "circe-generic"       % versionOf.circe,
-  "com.chuusai"     %% "shapeless"           % versionOf.shapeless,
-  "io.laserdisc"    %% "log-effect-core"     % versionOf.`log-effect`,
-  "io.laserdisc"    %% "log-effect-zio"      % versionOf.`log-effect`,
-  "ch.qos.logback"  % "logback-classic"      % versionOf.`logback-classic`,
-  "com.github.ghik" %% "silencer-lib"        % versionOf.silencer,
-  "dev.zio"         %% "zio"                 % versionOf.zio,
-  "dev.zio"         %% "zio-interop-cats"    % versionOf.`zio-interop-cats`
+  "com.typesafe.akka" %% "akka-actor-typed"    % versionOf.akka,
+  "org.typelevel"     %% "cats-core"           % versionOf.cats,
+  "org.typelevel"     %% "cats-effect"         % versionOf.catsEffect,
+  "co.fs2"            %% "fs2-core"            % versionOf.fs2,
+  "org.http4s"        %% "http4s-core"         % versionOf.http4s,
+  "org.http4s"        %% "http4s-server"       % versionOf.http4s,
+  "org.http4s"        %% "http4s-dsl"          % versionOf.http4s excludeAll (transitiveDependencies: _*),
+  "org.http4s"        %% "http4s-blaze-server" % versionOf.http4s,
+  "org.http4s"        %% "http4s-circe"        % versionOf.http4s,
+  "io.circe"          %% "circe-core"          % versionOf.circe,
+  "io.circe"          %% "circe-generic"       % versionOf.circe,
+  "com.chuusai"       %% "shapeless"           % versionOf.shapeless,
+  "io.laserdisc"      %% "log-effect-core"     % versionOf.`log-effect`,
+  "io.laserdisc"      %% "log-effect-zio"      % versionOf.`log-effect`,
+  "ch.qos.logback"    % "logback-classic"      % versionOf.`logback-classic`,
+  "com.github.ghik"   %% "silencer-lib"        % versionOf.silencer,
+  "dev.zio"           %% "zio"                 % versionOf.zio,
+  "dev.zio"           %% "zio-interop-cats"    % versionOf.`zio-interop-cats`
 ) map (_.withSources)
 
 /*
@@ -131,9 +133,13 @@ val dockerSettings = Seq(
 )
 
 val fleet = project.settings(
-  name := "fleet"
+  name := "fleet",
 //  settings ++= generalOptions
-//  libraryDependencies ++=
+  libraryDependencies ++= Seq(
+    "com.typesafe.akka" %% "akka-actor-typed"         % versionOf.akka,
+    "org.scalatest"     %% "scalatest"                % versionOf.scalaTest % Test,
+    "com.typesafe.akka" %% "akka-actor-testkit-typed" % versionOf.akka % Test
+  )
 )
 
 val root = project
