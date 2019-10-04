@@ -130,6 +130,12 @@ val dockerSettings = Seq(
   dockerBaseImage in Docker := "hirokimatsumoto/alpine-openjdk-11"
 )
 
+val fleet = project.settings(
+  name := "fleet"
+//  settings ++= generalOptions
+//  libraryDependencies ++=
+)
+
 val root = project
   .in(file("."))
   .enablePlugins(BuildInfoPlugin)
@@ -160,4 +166,7 @@ val root = project
     scalacOptions in Test ++= testOnlyOptions,
     scalacOptions in (Compile, console) --= nonTestExceptions,
     javaOptions   in Universal := jreRuntimeOptions
+  )
+  .aggregate(
+    fleet
   )
